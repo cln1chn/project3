@@ -98,6 +98,15 @@ h1 {
 .pokeball.dragging {
   cursor: grabbing;
   transform: scale(1.06);
+  animation: pokeballShake 0.18s linear infinite;
+}
+
+@keyframes pokeballShake {
+  0% { transform: scale(1.06) rotate(0deg) translateX(0); }
+  25% { transform: scale(1.06) rotate(-4deg) translateX(-1px); }
+  50% { transform: scale(1.06) rotate(0deg) translateX(0); }
+  75% { transform: scale(1.06) rotate(4deg) translateX(1px); }
+  100% { transform: scale(1.06) rotate(0deg) translateX(0); }
 }
 
 .grid-wrap {
@@ -155,27 +164,18 @@ h1 {
   opacity: 1;
 }
 
-/* quick snap animation when a pokemon is chosen */
 .block.snap {
   animation: snapPick 0.34s ease;
 }
 
 @keyframes snapPick {
-  0% {
-    transform: scale(1);
-  }
-  35% {
-    transform: scale(1.08);
-  }
-  65% {
-    transform: scale(0.97);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { transform: scale(1); }
+  35% { transform: scale(1.08); }
+  65% { transform: scale(0.97); }
+  100% { transform: scale(1); }
 }
 
-/* popup */
+/* main popup */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -213,6 +213,48 @@ h1 {
   background: var(--panel-2);
   color: var(--text);
   font-family: "Courier New", monospace;
+}
+
+/* small temporary notice */
+.mini-notice {
+  position: fixed;
+  left: 50%;
+  top: 32px;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 3px solid var(--line);
+  color: var(--text);
+  padding: 10px 14px;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mini-notice.show {
+  animation: noticeFade 2.4s ease forwards;
+}
+
+@keyframes noticeFade {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+.hidden {
+  display: none;
 }
 
 @media (max-width: 900px) {

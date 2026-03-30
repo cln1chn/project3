@@ -4,40 +4,29 @@ const pokeball = document.getElementById("pokeball");
 const popup = document.getElementById("popupOverlay");
 const popupText = document.getElementById("popupMessage");
 const closeBtn = document.getElementById("closePopupBtn");
+const miniNotice = document.getElementById("miniNotice");
 
 const pokemonList = [
-  "articuno",
-  "beedrill",
-  "ditto",
-  "dragonite",
-  "drifloon",
-  "duosion",
-  "houndoom",
-  "jigglypuff",
-  "krabby",
-  "leafeon",
-  "mew",
-  "morpeko",
-  "sentret",
-  "shellder",
-  "spheal",
-  "tepig",
-  "wartortle",
-  "woobat"
+  "articuno","beedrill","ditto","dragonite","drifloon","duosion",
+  "houndoom","jigglypuff","krabby","leafeon","mew","morpeko",
+  "sentret","shellder","spheal","tepig","wartortle","woobat"
 ];
 
 let shuffled = [];
 let index = 0;
 let picksLeft = 6;
 let dragging = false;
+let miniNoticeTimer = null;
 
 const blocks = [];
 
+/* shuffle pokemon */
 function shuffle() {
   shuffled = [...pokemonList].sort(() => Math.random() - 0.5);
   index = 0;
 }
 
+/* create grid */
 function create() {
   for (let i = 0; i < 18; i++) {
     const b = document.createElement("div");
@@ -45,7 +34,6 @@ function create() {
 
     const img = document.createElement("img");
     img.className = "block-image";
-    img.alt = "";
 
     b.appendChild(img);
     grid.appendChild(b);
@@ -55,6 +43,31 @@ function create() {
   }
 }
 
+/* update counter text */
+function updateCounter() {
+  if (picksLeft === 1) {
+    counter.textContent = "1 cell left to pick";
+  } else {
+    counter.textContent = `${picksLeft} cells left to pick`;
+  }
+}
+
+/* mini popup message */
+function showMiniNotice(message) {
+  if (miniNoticeTimer) clearTimeout(miniNoticeTimer);
+
+  miniNotice.textContent = message;
+  miniNotice.classList.remove("hidden", "show");
+
+  void miniNotice.offsetWidth;
+  miniNotice.classList.add("show");
+
+  miniNoticeTimer = setTimeout(() => {
+    miniNotice.classList.remove("show");
+  }, 2400);
+}
+
+/* select block */
 function selectBlock(block) {
   if (picksLeft <= 0) return;
   if (block.classList.contains("locked")) return;
@@ -71,27 +84,28 @@ function selectBlock(block) {
 
   index++;
   picksLeft--;
+
   updateCounter();
 
+  /* show checkmark when done */
   if (picksLeft === 0) {
     pokeball.classList.add("ready");
+    showMiniNotice("✔ selections complete");
   }
 }
 
-function updateCounter() {
-  if (picksLeft === 1) {
-    counter.textContent = "1 cell left to pick";
-  } else {
-    counter.textContent = `${picksLeft} cells left to pick`;
-  }
-}
-
+/* start dragging */
 pokeball.addEventListener("mousedown", () => {
-  if (picksLeft > 0) return;
+  if (picksLeft > 0) {
+    showMiniNotice("pick all 6 first");
+    return;
+  }
+
   dragging = true;
   pokeball.classList.add("dragging");
 });
 
+/* move pokeball */
 document.addEventListener("mousemove", (e) => {
   if (!dragging) return;
 
@@ -101,6 +115,7 @@ document.addEventListener("mousemove", (e) => {
   pokeball.style.zIndex = "999";
 });
 
+/* drop pokeball */
 document.addEventListener("mouseup", (e) => {
   if (!dragging) return;
 
@@ -126,33 +141,36 @@ document.addEventListener("mouseup", (e) => {
   if (chosenBlock) {
     choosePokemon(chosenBlock);
   } else {
-    resetPokeballPosition();
+    resetPokeball();
   }
 });
 
+/* choose final pokemon */
 function choosePokemon(block) {
   const name = block.dataset.name;
 
   block.classList.add("chosen");
-  block.classList.remove("snap");
 
-  /* restart the snap animation cleanly */
+  /* restart snap animation */
+  block.classList.remove("snap");
   void block.offsetWidth;
   block.classList.add("snap");
 
   popupText.textContent = `${name}, i choose you!`;
   popup.classList.remove("hidden");
 
-  resetPokeballPosition();
+  resetPokeball();
 }
 
-function resetPokeballPosition() {
+/* reset pokeball position */
+function resetPokeball() {
   pokeball.style.position = "static";
   pokeball.style.left = "";
   pokeball.style.top = "";
   pokeball.style.zIndex = "";
 }
 
+/* close popup + reset everything */
 closeBtn.onclick = () => {
   popup.classList.add("hidden");
   resetAll();
@@ -170,9 +188,10 @@ function resetAll() {
   });
 
   pokeball.classList.remove("ready", "dragging");
-  resetPokeballPosition();
+  resetPokeball();
 }
 
+/* init */
 create();
 shuffle();
 updateCounter();
