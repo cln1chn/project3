@@ -7,19 +7,22 @@
   <meta name="description" content="An interactive website based on chaos and control.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
+  <!-- Open Graph (optional but fine to keep) -->
+  <meta property="og:title" content="controlled chaos">
+  <meta property="og:type" content="website">
   <meta property="og:url" content="">
   <meta property="og:image" content="">
 
+  <!-- Favicon -->
   <link rel="icon" href="img/C-LOGO_BLACK.png">
-  <!-- Place favicon.ico in the root directory -->
 
+  <!-- CSS -->
   <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
- <main class="experience">
+  <main class="experience">
+    
     <header class="topbar">
       <div class="title-group">
         <p class="eyebrow">interactive web project</p>
@@ -30,6 +33,7 @@
         <button id="toggleDriftBtn" class="ui-btn" type="button" aria-pressed="true">
           pause drift
         </button>
+
         <button id="resetBtn" class="ui-btn" type="button">
           reset layout
         </button>
@@ -53,9 +57,11 @@
     <section class="grid-wrap">
       <div class="grid" id="grid"></div>
     </section>
+
   </main>
 
-  <script src="main.js"></script>
-</body>
+  <!-- JS (VERY IMPORTANT: path must match your folder) -->
+  <script src="js/main.js"></script>
 
+</body>
 </html>
