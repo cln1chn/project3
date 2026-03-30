@@ -1,10 +1,10 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
-  <title>Responsive Layouts</title>
-  <meta name="description" content="This site will serve as the hub for many sub responsive layouts">
+  <title>controlled chaos</title>
+  <meta name="description" content="An interactive website based on chaos and control.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <meta property="og:title" content="">
@@ -13,7 +13,7 @@
   <meta property="og:image" content="">
 
   <link rel="manifest" href="site.webmanifest">
-  <link rel="icon" href="icon.png">
+  <link rel="icon" href="img/C-LOGO_BLACK.png">
   <!-- Place favicon.ico in the root directory -->
 
   <link rel="stylesheet" href="css/normalize.css">
@@ -23,9 +23,35 @@
 </head>
 
 <body>
-  <!-- Place your site's HTML here -->
-  <p>This text will display on your site! Jan 19</p>
-  <script src="js/main.js"></script>
-</body>
+  <main class="experience" aria-label="Controlled Chaos interactive experience">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">interactive web experience</p>
+        <h1>controlled chaos</h1>
+      </div>
 
+      <div class="controls">
+        <button id="toggleDriftBtn" class="ui-btn" type="button" aria-pressed="true">
+          pause drift
+        </button>
+        <button id="resetBtn" class="ui-btn" type="button">
+          restore order
+        </button>
+      </div>
+    </header>
+
+    <section class="intro" aria-label="Project description">
+      <p>
+        A rigid system tries to stay organized while slowly slipping out of alignment.
+        Hover to disturb the grid. Click blocks to permanently destabilize them.
+      </p>
+    </section>
+
+    <section class="grid-wrap" aria-label="Interactive grid area">
+      <div class="grid" id="grid"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
 </html>
