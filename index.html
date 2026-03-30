@@ -23,10 +23,10 @@
 </head>
 
 <body>
-  <main class="experience" aria-label="Controlled Chaos interactive experience">
+ <main class="experience">
     <header class="topbar">
-      <div>
-        <p class="eyebrow">interactive web experience</p>
+      <div class="title-group">
+        <p class="eyebrow">interactive web project</p>
         <h1>controlled chaos</h1>
       </div>
 
@@ -35,23 +35,30 @@
           pause drift
         </button>
         <button id="resetBtn" class="ui-btn" type="button">
-          restore order
+          reset layout
         </button>
       </div>
     </header>
 
-    <section class="intro" aria-label="Project description">
+    <section class="intro">
       <p>
-        A rigid system tries to stay organized while slowly slipping out of alignment.
-        Hover to disturb the grid. Click blocks to permanently destabilize them.
+        This project is about a layout that starts organized and then slowly slips
+        out of place. Hover over blocks to disturb them. Click blocks to make
+        them stay more unstable.
       </p>
     </section>
 
-    <section class="grid-wrap" aria-label="Interactive grid area">
+    <section class="legend">
+      <p>hover = temporary shift</p>
+      <p>click = lock in disorder</p>
+      <p>reset = restore order</p>
+    </section>
+
+    <section class="grid-wrap">
       <div class="grid" id="grid"></div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

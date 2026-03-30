@@ -26,7 +26,6 @@ const blockConfig = [
 const blocks = [];
 let driftEnabled = true;
 let driftLevel = 0;
-let animationFrameId = null;
 let lastDriftTime = 0;
 
 function randomInRange(min, max) {
@@ -43,20 +42,20 @@ function createBlocks() {
     block.type = "button";
     block.className = `block ${modifier}`.trim();
     block.setAttribute("aria-label", `Grid block ${index + 1}`);
-    block.dataset.index = String(index);
+    block.dataset.index = index;
     block.dataset.baseX = "0";
     block.dataset.baseY = "0";
     block.dataset.hoverX = "0";
     block.dataset.hoverY = "0";
     block.dataset.locked = "false";
 
-    const label = document.createElement("span");
-    label.className = "block-label";
-    label.textContent = `cell ${String(index + 1).padStart(2, "0")}`;
-
     const status = document.createElement("span");
     status.className = "status";
     status.textContent = "stable";
+
+    const label = document.createElement("span");
+    label.className = "block-label";
+    label.textContent = `cell ${String(index + 1).padStart(2, "0")}`;
 
     block.appendChild(status);
     block.appendChild(label);
@@ -75,7 +74,11 @@ function applyTransform(block) {
   const hoverX = parseFloat(block.dataset.hoverX);
   const hoverY = parseFloat(block.dataset.hoverY);
 
-  block.style.transform = `translate(${baseX + hoverX}px, ${baseY + hoverY}px) rotate(${(baseX + hoverX) * 0.04}deg)`;
+  const totalX = baseX + hoverX;
+  const totalY = baseY + hoverY;
+  const rotation = totalX * 0.03;
+
+  block.style.transform = `translate(${totalX}px, ${totalY}px) rotate(${rotation}deg)`;
 }
 
 function handleHoverEnter(targetBlock) {
@@ -89,8 +92,8 @@ function handleHoverEnter(targetBlock) {
     if (distance > 3 || isLocked) return;
 
     const influence = clamp(1 - distance / 4, 0.2, 1);
-    block.dataset.hoverX = String(randomInRange(-10, 10) * influence);
-    block.dataset.hoverY = String(randomInRange(-8, 8) * influence);
+    block.dataset.hoverX = String(randomInRange(-9, 9) * influence);
+    block.dataset.hoverY = String(randomInRange(-7, 7) * influence);
     applyTransform(block);
   });
 }
@@ -116,8 +119,8 @@ function handleLock(block) {
   const status = block.querySelector(".status");
 
   if (!isLocked) {
-    const extraX = randomInRange(-26, 26);
-    const extraY = randomInRange(-22, 22);
+    const extraX = randomInRange(-24, 24);
+    const extraY = randomInRange(-20, 20);
 
     block.dataset.baseX = String(parseFloat(block.dataset.baseX) + extraX);
     block.dataset.baseY = String(parseFloat(block.dataset.baseY) + extraY);
@@ -127,25 +130,25 @@ function handleLock(block) {
   } else {
     block.dataset.locked = "false";
     block.classList.remove("locked");
-    status.textContent = "unstable";
+    status.textContent = "drifting";
   }
 
   applyTransform(block);
 }
 
-function stepDrift(timestamp) {
+function updateDrift(timestamp) {
   if (!lastDriftTime) lastDriftTime = timestamp;
   const elapsed = timestamp - lastDriftTime;
 
-  if (driftEnabled && elapsed > 900) {
+  if (driftEnabled && elapsed > 950) {
     driftLevel = clamp(driftLevel + 0.12, 0, 1.8);
 
     blocks.forEach((block) => {
       const isLocked = block.dataset.locked === "true";
-      const multiplier = isLocked ? 1.4 : 0.55;
+      const multiplier = isLocked ? 1.35 : 0.55;
 
-      const driftX = randomInRange(-1.6, 1.6) * driftLevel * multiplier;
-      const driftY = randomInRange(-1.2, 1.2) * driftLevel * multiplier;
+      const driftX = randomInRange(-1.5, 1.5) * driftLevel * multiplier;
+      const driftY = randomInRange(-1.1, 1.1) * driftLevel * multiplier;
 
       block.dataset.baseX = String(parseFloat(block.dataset.baseX) + driftX);
       block.dataset.baseY = String(parseFloat(block.dataset.baseY) + driftY);
@@ -161,7 +164,7 @@ function stepDrift(timestamp) {
     lastDriftTime = timestamp;
   }
 
-  animationFrameId = window.requestAnimationFrame(stepDrift);
+  window.requestAnimationFrame(updateDrift);
 }
 
 function resetOrder() {
@@ -190,7 +193,8 @@ function toggleDrift() {
 }
 
 createBlocks();
+
 resetBtn.addEventListener("click", resetOrder);
 toggleDriftBtn.addEventListener("click", toggleDrift);
 
-animationFrameId = window.requestAnimationFrame(stepDrift);
+window.requestAnimationFrame(updateDrift);
