@@ -7,43 +7,48 @@ const closeBtn = document.getElementById("closePopupBtn");
 const miniNotice = document.getElementById("miniNotice");
 
 const pokemonList = [
-  "articuno","beedrill","ditto","dragonite","drifloon","duosion",
-  "houndoom","jigglypuff","krabby","leafeon","mew","morpeko",
-  "sentret","shellder","spheal","tepig","wartortle","woobat"
+  "articuno",
+  "beedrill",
+  "ditto",
+  "dragonite",
+  "drifloon",
+  "duosion",
+  "houndoom",
+  "jigglypuff",
+  "krabby",
+  "leafeon",
+  "mew",
+  "morpeko",
+  "sentret",
+  "shellder",
+  "spheal",
+  "tepig",
+  "wartortle",
+  "woobat"
 ];
 
 let shuffled = [];
-let index = 0;
+let pokemonIndex = 0;
 let picksLeft = 6;
 let dragging = false;
 let miniNoticeTimer = null;
+let interactionsFrozen = false;
 
 const blocks = [];
 
-/* shuffle pokemon */
-function shuffle() {
+function randomInRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function shufflePokemon() {
   shuffled = [...pokemonList].sort(() => Math.random() - 0.5);
-  index = 0;
+  pokemonIndex = 0;
 }
 
-/* create grid */
-function create() {
-  for (let i = 0; i < 18; i++) {
-    const b = document.createElement("div");
-    b.className = "block";
-
-    const img = document.createElement("img");
-    img.className = "block-image";
-
-    b.appendChild(img);
-    grid.appendChild(b);
-    blocks.push(b);
-
-    b.addEventListener("click", () => selectBlock(b));
-  }
-}
-
-/* update counter text */
 function updateCounter() {
   if (picksLeft === 1) {
     counter.textContent = "1 cell left to pick";
@@ -52,14 +57,16 @@ function updateCounter() {
   }
 }
 
-/* mini popup message */
 function showMiniNotice(message) {
-  if (miniNoticeTimer) clearTimeout(miniNoticeTimer);
+  if (miniNoticeTimer) {
+    clearTimeout(miniNoticeTimer);
+  }
 
   miniNotice.textContent = message;
   miniNotice.classList.remove("hidden", "show");
 
   void miniNotice.offsetWidth;
+
   miniNotice.classList.add("show");
 
   miniNoticeTimer = setTimeout(() => {
@@ -67,34 +74,127 @@ function showMiniNotice(message) {
   }, 2400);
 }
 
-/* select block */
+function createBlocks() {
+  for (let i = 0; i < 18; i++) {
+    const block = document.createElement("div");
+    block.className = "block";
+
+    block.dataset.index = i;
+    block.dataset.baseX = "0";
+    block.dataset.baseY = "0";
+    block.dataset.hoverX = "0";
+    block.dataset.hoverY = "0";
+    block.dataset.name = "";
+
+    const img = document.createElement("img");
+    img.className = "block-image";
+    img.alt = "";
+
+    block.appendChild(img);
+    grid.appendChild(block);
+    blocks.push(block);
+
+    block.addEventListener("pointerenter", () => handleHoverEnter(block));
+    block.addEventListener("pointerleave", () => handleHoverLeave(block));
+    block.addEventListener("click", () => selectBlock(block));
+  }
+}
+
+function applyTransform(block) {
+  const baseX = parseFloat(block.dataset.baseX);
+  const baseY = parseFloat(block.dataset.baseY);
+  const hoverX = parseFloat(block.dataset.hoverX);
+  const hoverY = parseFloat(block.dataset.hoverY);
+
+  const totalX = baseX + hoverX;
+  const totalY = baseY + hoverY;
+  const rotation = totalX * 0.03;
+
+  if (block.classList.contains("snap")) return;
+
+  block.style.transform = `translate(${totalX}px, ${totalY}px) rotate(${rotation}deg)`;
+}
+
+function handleHoverEnter(targetBlock) {
+  if (interactionsFrozen) return;
+  if (targetBlock.classList.contains("locked")) return;
+
+  const targetIndex = Number(targetBlock.dataset.index);
+
+  blocks.forEach((block) => {
+    if (block.classList.contains("locked")) return;
+
+    const index = Number(block.dataset.index);
+    const distance = Math.abs(index - targetIndex);
+
+    if (distance > 3) return;
+
+    const influence = clamp(1 - distance / 4, 0.2, 1);
+
+    block.dataset.hoverX = String(randomInRange(-9, 9) * influence);
+    block.dataset.hoverY = String(randomInRange(-7, 7) * influence);
+
+    applyTransform(block);
+  });
+}
+
+function handleHoverLeave(targetBlock) {
+  if (interactionsFrozen) return;
+
+  const targetIndex = Number(targetBlock.dataset.index);
+
+  blocks.forEach((block) => {
+    if (block.classList.contains("locked")) return;
+
+    const index = Number(block.dataset.index);
+    const distance = Math.abs(index - targetIndex);
+
+    if (distance > 3) return;
+
+    block.dataset.hoverX = "0";
+    block.dataset.hoverY = "0";
+
+    applyTransform(block);
+  });
+}
+
 function selectBlock(block) {
   if (picksLeft <= 0) return;
   if (block.classList.contains("locked")) return;
 
   block.classList.add("locked");
 
+  block.dataset.hoverX = "0";
+  block.dataset.hoverY = "0";
+  applyTransform(block);
+
   const img = block.querySelector("img");
-  const name = shuffled[index];
+  const name = shuffled[pokemonIndex];
 
   img.src = `img/pokemon/${name}.png`;
   block.dataset.name = name;
 
   block.classList.add("revealed");
 
-  index++;
+  pokemonIndex++;
   picksLeft--;
-
   updateCounter();
 
-  /* show checkmark when done */
   if (picksLeft === 0) {
+    interactionsFrozen = true;
     pokeball.classList.add("ready");
     showMiniNotice("✔ selections complete");
+
+    blocks.forEach((b) => {
+      b.dataset.hoverX = "0";
+      b.dataset.hoverY = "0";
+      if (!b.classList.contains("snap")) {
+        b.style.transform = "translate(0px, 0px) rotate(0deg)";
+      }
+    });
   }
 }
 
-/* start dragging */
 pokeball.addEventListener("mousedown", () => {
   if (picksLeft > 0) {
     showMiniNotice("pick all 6 first");
@@ -105,7 +205,6 @@ pokeball.addEventListener("mousedown", () => {
   pokeball.classList.add("dragging");
 });
 
-/* move pokeball */
 document.addEventListener("mousemove", (e) => {
   if (!dragging) return;
 
@@ -115,7 +214,6 @@ document.addEventListener("mousemove", (e) => {
   pokeball.style.zIndex = "999";
 });
 
-/* drop pokeball */
 document.addEventListener("mouseup", (e) => {
   if (!dragging) return;
 
@@ -141,57 +239,63 @@ document.addEventListener("mouseup", (e) => {
   if (chosenBlock) {
     choosePokemon(chosenBlock);
   } else {
-    resetPokeball();
+    resetPokeballPosition();
   }
 });
 
-/* choose final pokemon */
 function choosePokemon(block) {
   const name = block.dataset.name;
 
   block.classList.add("chosen");
-
-  /* restart snap animation */
   block.classList.remove("snap");
+
   void block.offsetWidth;
+
   block.classList.add("snap");
+  block.style.transform = "";
 
   popupText.textContent = `${name}, i choose you!`;
   popup.classList.remove("hidden");
 
-  resetPokeball();
+  resetPokeballPosition();
 }
 
-/* reset pokeball position */
-function resetPokeball() {
+function resetPokeballPosition() {
   pokeball.style.position = "static";
   pokeball.style.left = "";
   pokeball.style.top = "";
   pokeball.style.zIndex = "";
 }
 
-/* close popup + reset everything */
 closeBtn.onclick = () => {
   popup.classList.add("hidden");
   resetAll();
 };
 
 function resetAll() {
-  shuffle();
+  shufflePokemon();
   picksLeft = 6;
+  interactionsFrozen = false;
   updateCounter();
 
-  blocks.forEach((b) => {
-    b.classList.remove("locked", "revealed", "chosen", "snap");
-    b.querySelector("img").src = "";
-    b.dataset.name = "";
+  blocks.forEach((block) => {
+    block.classList.remove("locked", "revealed", "chosen", "snap");
+
+    const img = block.querySelector("img");
+    img.src = "";
+
+    block.dataset.name = "";
+    block.dataset.baseX = "0";
+    block.dataset.baseY = "0";
+    block.dataset.hoverX = "0";
+    block.dataset.hoverY = "0";
+    block.style.transform = "translate(0px, 0px) rotate(0deg)";
   });
 
   pokeball.classList.remove("ready", "dragging");
-  resetPokeball();
+  resetPokeballPosition();
 }
 
-/* init */
-create();
-shuffle();
+createBlocks();
+shufflePokemon();
 updateCounter();
