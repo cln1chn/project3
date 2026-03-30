@@ -1,57 +1,33 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <title>controlled chaos</title>
-  <meta name="description" content="An interactive website based on chaos and control.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Open Graph (optional but fine to keep) -->
-  <meta property="og:title" content="controlled chaos">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-
-  <!-- Favicon -->
   <link rel="icon" href="img/C-LOGO_BLACK.png">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
   <main class="experience">
-    
+
     <header class="topbar">
-      <div class="title-group">
+      <div>
         <p class="eyebrow">interactive web project</p>
         <h1>controlled chaos</h1>
       </div>
 
       <div class="controls">
-        <button id="toggleDriftBtn" class="ui-btn" type="button" aria-pressed="true">
-          pause drift
-        </button>
-
-        <button id="resetBtn" class="ui-btn" type="button">
-          reset layout
-        </button>
+        <button id="toggleDriftBtn" class="ui-btn">pause drift</button>
+        <button id="resetBtn" class="ui-btn">reset layout</button>
       </div>
     </header>
 
     <section class="intro">
       <p>
-        This project is about a layout that starts organized and then slowly slips
-        out of place. Hover over blocks to disturb them. Click blocks to make
-        them stay more unstable.
+        layout starts organized, then slowly breaks. hover and click to mess it up.
       </p>
-    </section>
-
-    <section class="legend">
-      <p>hover = temporary shift</p>
-      <p>click = lock in disorder</p>
-      <p>reset = restore order</p>
     </section>
 
     <section class="grid-wrap">
@@ -60,8 +36,6 @@
 
   </main>
 
-  <!-- JS (VERY IMPORTANT: path must match your folder) -->
   <script src="js/main.js"></script>
-
 </body>
 </html>
