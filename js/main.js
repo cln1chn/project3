@@ -3,6 +3,7 @@ const counter = document.getElementById("pickCounter");
 const pokeball = document.getElementById("pokeball");
 const popup = document.getElementById("popupOverlay");
 const popupText = document.getElementById("popupMessage");
+const popupPokemonImage = document.getElementById("popupPokemonImage");
 const closeBtn = document.getElementById("closePopupBtn");
 const miniNotice = document.getElementById("miniNotice");
 
@@ -254,6 +255,9 @@ function choosePokemon(block) {
   block.classList.add("snap");
   block.style.transform = "";
 
+  popupPokemonImage.src = `img/pokemon/${name}.png`;
+  popupPokemonImage.alt = name;
+
   popupText.textContent = `${name}, i choose you!`;
   popup.classList.remove("hidden");
 
@@ -291,6 +295,9 @@ function resetAll() {
     block.dataset.hoverY = "0";
     block.style.transform = "translate(0px, 0px) rotate(0deg)";
   });
+
+  popupPokemonImage.src = "";
+  popupPokemonImage.alt = "";
 
   pokeball.classList.remove("ready", "dragging");
   resetPokeballPosition();
