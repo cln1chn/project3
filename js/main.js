@@ -1,121 +1,178 @@
 const grid = document.getElementById("grid");
-const resetBtn = document.getElementById("resetBtn");
-const toggleDriftBtn = document.getElementById("toggleDriftBtn");
+const counter = document.getElementById("pickCounter");
+const pokeball = document.getElementById("pokeball");
+const popup = document.getElementById("popupOverlay");
+const popupText = document.getElementById("popupMessage");
+const closeBtn = document.getElementById("closePopupBtn");
 
 const pokemonList = [
-  "articuno","beedrill","ditto","dragonite","drifloon","duosion",
-  "houndoom","jigglypuff","krabby","leafeon","mew","morpeko",
-  "sentret","shellder","spheal","tepig","wartortle","woobat"
+  "articuno",
+  "beedrill",
+  "ditto",
+  "dragonite",
+  "drifloon",
+  "duosion",
+  "houndoom",
+  "jigglypuff",
+  "krabby",
+  "leafeon",
+  "mew",
+  "morpeko",
+  "sentret",
+  "shellder",
+  "spheal",
+  "tepig",
+  "wartortle",
+  "woobat"
 ];
 
-let shuffledPokemon = [];
-let pokemonIndex = 0;
+let shuffled = [];
+let index = 0;
+let picksLeft = 6;
+let dragging = false;
 
 const blocks = [];
-let driftEnabled = true;
-let driftLevel = 0;
-let lastDriftTime = 0;
-
-function random(min, max) {
-  return Math.random() * (max - min) + min;
-}
 
 function shuffle() {
-  shuffledPokemon = [...pokemonList].sort(() => Math.random() - 0.5);
-  pokemonIndex = 0;
+  shuffled = [...pokemonList].sort(() => Math.random() - 0.5);
+  index = 0;
 }
 
-function createBlocks() {
+function create() {
   for (let i = 0; i < 18; i++) {
-    const block = document.createElement("div");
-    block.className = "block";
-    block.dataset.baseX = 0;
-    block.dataset.baseY = 0;
+    const b = document.createElement("div");
+    b.className = "block";
 
     const img = document.createElement("img");
     img.className = "block-image";
+    img.alt = "";
 
-    const label = document.createElement("div");
-    label.className = "block-label";
-    label.textContent = "cell";
+    b.appendChild(img);
+    grid.appendChild(b);
+    blocks.push(b);
 
-    block.appendChild(img);
-    block.appendChild(label);
-
-    grid.appendChild(block);
-    blocks.push(block);
-
-    block.addEventListener("mouseenter", () => hover(block));
-    block.addEventListener("mouseleave", () => resetHover(block));
-    block.addEventListener("click", () => lock(block));
+    b.addEventListener("click", () => selectBlock(b));
   }
 }
 
-function move(block, x, y) {
-  block.style.transform = `translate(${x}px, ${y}px)`;
-}
-
-function hover(block) {
+function selectBlock(block) {
+  if (picksLeft <= 0) return;
   if (block.classList.contains("locked")) return;
 
-  const x = random(-10, 10);
-  const y = random(-8, 8);
-  move(block, x, y);
-}
+  block.classList.add("locked");
 
-function resetHover(block) {
-  if (block.classList.contains("locked")) return;
-  move(block, 0, 0);
-}
-
-function lock(block) {
   const img = block.querySelector("img");
+  const name = shuffled[index];
 
-  if (!block.classList.contains("locked")) {
-    block.classList.add("locked");
+  img.src = `img/pokemon/${name}.png`;
+  block.dataset.name = name;
 
-    if (pokemonIndex < shuffledPokemon.length) {
-      img.src = `img/pokemon/${shuffledPokemon[pokemonIndex]}.png`;
-      block.classList.add("revealed");
-      pokemonIndex++;
-    }
-  } else {
-    block.classList.remove("locked", "revealed");
-    img.src = "";
+  block.classList.add("revealed");
+
+  index++;
+  picksLeft--;
+  updateCounter();
+
+  if (picksLeft === 0) {
+    pokeball.classList.add("ready");
   }
 }
 
-function drift() {
-  blocks.forEach(block => {
-    if (block.classList.contains("locked")) return;
+function updateCounter() {
+  if (picksLeft === 1) {
+    counter.textContent = "1 cell left to pick";
+  } else {
+    counter.textContent = `${picksLeft} cells left to pick`;
+  }
+}
 
-    const x = random(-2, 2) * driftLevel;
-    const y = random(-2, 2) * driftLevel;
+pokeball.addEventListener("mousedown", () => {
+  if (picksLeft > 0) return;
+  dragging = true;
+  pokeball.classList.add("dragging");
+});
 
-    move(block, x, y);
+document.addEventListener("mousemove", (e) => {
+  if (!dragging) return;
+
+  pokeball.style.position = "absolute";
+  pokeball.style.left = e.pageX - 35 + "px";
+  pokeball.style.top = e.pageY - 35 + "px";
+  pokeball.style.zIndex = "999";
+});
+
+document.addEventListener("mouseup", (e) => {
+  if (!dragging) return;
+
+  dragging = false;
+  pokeball.classList.remove("dragging");
+
+  let chosenBlock = null;
+
+  blocks.forEach((block) => {
+    const rect = block.getBoundingClientRect();
+
+    if (
+      e.clientX > rect.left &&
+      e.clientX < rect.right &&
+      e.clientY > rect.top &&
+      e.clientY < rect.bottom &&
+      block.classList.contains("locked")
+    ) {
+      chosenBlock = block;
+    }
   });
 
-  if (driftEnabled) driftLevel += 0.01;
-  requestAnimationFrame(drift);
+  if (chosenBlock) {
+    choosePokemon(chosenBlock);
+  } else {
+    resetPokeballPosition();
+  }
+});
+
+function choosePokemon(block) {
+  const name = block.dataset.name;
+
+  block.classList.add("chosen");
+  block.classList.remove("snap");
+
+  /* restart the snap animation cleanly */
+  void block.offsetWidth;
+  block.classList.add("snap");
+
+  popupText.textContent = `${name}, i choose you!`;
+  popup.classList.remove("hidden");
+
+  resetPokeballPosition();
 }
+
+function resetPokeballPosition() {
+  pokeball.style.position = "static";
+  pokeball.style.left = "";
+  pokeball.style.top = "";
+  pokeball.style.zIndex = "";
+}
+
+closeBtn.onclick = () => {
+  popup.classList.add("hidden");
+  resetAll();
+};
 
 function resetAll() {
   shuffle();
-  driftLevel = 0;
+  picksLeft = 6;
+  updateCounter();
 
-  blocks.forEach(block => {
-    block.classList.remove("locked", "revealed");
-    block.style.transform = "translate(0,0)";
-    block.querySelector("img").src = "";
+  blocks.forEach((b) => {
+    b.classList.remove("locked", "revealed", "chosen", "snap");
+    b.querySelector("img").src = "";
+    b.dataset.name = "";
   });
+
+  pokeball.classList.remove("ready", "dragging");
+  resetPokeballPosition();
 }
 
-toggleDriftBtn.onclick = () => {
-  driftEnabled = !driftEnabled;
-};
-
-resetBtn.onclick = resetAll;
-
-createBlocks();
+create();
 shuffle();
-drift();
+updateCounter();

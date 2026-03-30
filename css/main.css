@@ -8,6 +8,8 @@
   --muted: #9dc8a4;
   --line: #315f3c;
   --accent: #79c688;
+  --chosen: #b89a2e;
+  --chosen-border: #e0bf47;
 }
 
 * {
@@ -40,24 +42,62 @@ h1 {
   font-family: Arial, sans-serif;
   margin: 0;
   font-size: 3rem;
+  text-transform: lowercase;
 }
 
 .eyebrow {
   font-size: 0.8rem;
   color: var(--muted);
+  margin: 0 0 6px;
 }
 
-.controls {
+.intro {
+  margin-bottom: 14px;
+}
+
+.intro p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.status-row {
   display: flex;
-  gap: 8px;
-}
-
-.ui-btn {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 10px;
   border: 3px solid var(--line);
   background: var(--panel-2);
-  color: var(--text);
-  padding: 8px 12px;
-  cursor: pointer;
+  gap: 16px;
+}
+
+.pick-counter {
+  margin: 0;
+}
+
+.pokeball-area {
+  width: 90px;
+  min-width: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pokeball {
+  width: 70px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: transform 0.15s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+.pokeball.ready {
+  filter: drop-shadow(0 0 8px rgba(224, 191, 71, 0.45));
+}
+
+.pokeball.dragging {
+  cursor: grabbing;
+  transform: scale(1.06);
 }
 
 .grid-wrap {
@@ -73,16 +113,31 @@ h1 {
 }
 
 .block {
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   background: var(--block);
   border: 3px solid var(--line);
   position: relative;
   cursor: pointer;
-  transition: transform 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
 }
 
 .block:hover {
   background: var(--block-2);
+}
+
+.block.locked {
+  border-color: var(--accent);
+}
+
+.block.chosen {
+  background: var(--chosen);
+  border-color: var(--chosen-border);
+  box-shadow: 0 0 16px rgba(224, 191, 71, 0.35);
 }
 
 .block-image {
@@ -100,18 +155,83 @@ h1 {
   opacity: 1;
 }
 
-.status {
+/* quick snap animation when a pokemon is chosen */
+.block.snap {
+  animation: snapPick 0.34s ease;
+}
+
+@keyframes snapPick {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.08);
+  }
+  65% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* popup */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-overlay.hidden {
+  display: none;
+}
+
+.popup-box {
+  background: var(--panel);
+  border: 3px solid var(--line);
+  padding: 20px;
+  position: relative;
+  min-width: 280px;
+  box-shadow: 0 0 18px rgba(224, 191, 71, 0.18);
+}
+
+.popup-message {
+  margin: 0;
+  font-size: 1.2rem;
+  padding-right: 24px;
+}
+
+.popup-close {
   position: absolute;
   top: 5px;
   right: 5px;
-  font-size: 0.7rem;
-  color: var(--muted);
+  cursor: pointer;
+  border: 2px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: "Courier New", monospace;
 }
 
-.block-label {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
-  font-size: 0.7rem;
-  color: var(--muted);
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    padding: 10px;
+  }
+
+  .status-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

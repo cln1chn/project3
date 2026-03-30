@@ -2,39 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>controlled chaos</title>
+  <title>I CHOOSE WHO?</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="icon" href="img/C-LOGO_BLACK.png">
+  <link rel="icon" href="img/pokeball.png">
   <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
   <main class="experience">
-
     <header class="topbar">
       <div>
         <p class="eyebrow">interactive web project</p>
-        <h1>controlled chaos</h1>
-      </div>
-
-      <div class="controls">
-        <button id="toggleDriftBtn" class="ui-btn">pause drift</button>
-        <button id="resetBtn" class="ui-btn">reset layout</button>
+        <h1>pokemon</h1>
       </div>
     </header>
 
     <section class="intro">
       <p>
-        layout starts organized, then slowly breaks. hover and click to mess it up.
+        select 6 randomized cards & drag the pokeball onto your chosen pokemon!
       </p>
+    </section>
+
+    <section class="status-row">
+      <p id="pickCounter" class="pick-counter">6 cards left to pick</p>
+
+      <div class="pokeball-area">
+        <img
+          id="pokeball"
+          class="pokeball"
+          src="img/pokeball.png"
+          alt="pokeball"
+          draggable="false"
+        >
+      </div>
     </section>
 
     <section class="grid-wrap">
       <div class="grid" id="grid"></div>
     </section>
-
   </main>
+
+  <div id="popupOverlay" class="popup-overlay hidden">
+    <div class="popup-box">
+      <button id="closePopupBtn" class="popup-close" type="button" aria-label="close popup">x</button>
+      <p id="popupMessage" class="popup-message"></p>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
