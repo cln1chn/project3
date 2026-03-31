@@ -20,7 +20,12 @@
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #eff6ff, #dbeafe);
+  background: linear-gradient(
+    180deg,
+    #3b82f6 0%,   /* blue */
+    #60a5fa 40%,  /* lighter blue */
+    #fde047 100%  /* yellow */
+  );
   color: var(--text);
   font-family: "Courier New", monospace;
   padding: 18px;
