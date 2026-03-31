@@ -51,6 +51,11 @@ let dragging = false;
 let miniNoticeTimer = null;
 let interactionsFrozen = false;
 
+/* these help with mobile auto-scroll */
+let lastPointerPageX = 0;
+let lastPointerClientY = 0;
+let autoScrollFrame = null;
+
 const blocks = [];
 
 function randomInRange(min, max) {
@@ -213,7 +218,7 @@ function selectBlock(block) {
   }
 }
 
-function startDrag() {
+function startDrag(pageX, clientY) {
   if (picksLeft > 0) {
     showMiniNotice("pick all 6 first!");
     return;
@@ -221,22 +226,31 @@ function startDrag() {
 
   dragging = true;
   pokeball.classList.add("dragging");
+
+  lastPointerPageX = pageX;
+  lastPointerClientY = clientY;
+
+  startAutoScroll();
 }
 
-function moveDrag(x, y) {
+function moveDrag(pageX, clientY) {
   if (!dragging) return;
 
+  lastPointerPageX = pageX;
+  lastPointerClientY = clientY;
+
   pokeball.style.position = "absolute";
-  pokeball.style.left = `${x - 35}px`;
-  pokeball.style.top = `${y - 35}px`;
+  pokeball.style.left = `${pageX - 35}px`;
+  pokeball.style.top = `${window.scrollY + clientY - 35}px`;
   pokeball.style.zIndex = "999";
 }
 
-function endDrag(x, y) {
+function endDrag(clientX, clientY) {
   if (!dragging) return;
 
   dragging = false;
   pokeball.classList.remove("dragging");
+  stopAutoScroll();
 
   let chosenBlock = null;
 
@@ -244,10 +258,10 @@ function endDrag(x, y) {
     const rect = block.getBoundingClientRect();
 
     if (
-      x > rect.left &&
-      x < rect.right &&
-      y > rect.top &&
-      y < rect.bottom &&
+      clientX > rect.left &&
+      clientX < rect.right &&
+      clientY > rect.top &&
+      clientY < rect.bottom &&
       block.classList.contains("locked")
     ) {
       chosenBlock = block;
@@ -261,24 +275,68 @@ function endDrag(x, y) {
   }
 }
 
+/* if the pokeball gets near top/bottom of screen, scroll page */
+function startAutoScroll() {
+  if (autoScrollFrame !== null) return;
+
+  function stepAutoScroll() {
+    if (!dragging) {
+      autoScrollFrame = null;
+      return;
+    }
+
+    const edgeSize = 100;
+    const maxSpeed = 12;
+    const viewportHeight = window.innerHeight;
+    let scrollAmount = 0;
+
+    if (lastPointerClientY < edgeSize) {
+      const strength = 1 - lastPointerClientY / edgeSize;
+      scrollAmount = -maxSpeed * strength;
+    } else if (lastPointerClientY > viewportHeight - edgeSize) {
+      const strength = (lastPointerClientY - (viewportHeight - edgeSize)) / edgeSize;
+      scrollAmount = maxSpeed * strength;
+    }
+
+    if (scrollAmount !== 0) {
+      window.scrollBy(0, scrollAmount);
+
+      pokeball.style.top = `${window.scrollY + lastPointerClientY - 35}px`;
+      pokeball.style.left = `${lastPointerPageX - 35}px`;
+    }
+
+    autoScrollFrame = requestAnimationFrame(stepAutoScroll);
+  }
+
+  autoScrollFrame = requestAnimationFrame(stepAutoScroll);
+}
+
+function stopAutoScroll() {
+  if (autoScrollFrame !== null) {
+    cancelAnimationFrame(autoScrollFrame);
+    autoScrollFrame = null;
+  }
+}
+
 pokeball.addEventListener("mousedown", (e) => {
-  startDrag();
+  e.preventDefault();
+  startDrag(e.pageX, e.clientY);
 });
 
 pokeball.addEventListener("touchstart", (e) => {
   const touch = e.touches[0];
-  startDrag(touch.pageX, touch.pageY);
-});
+  startDrag(touch.pageX, touch.clientY);
+}, { passive: true });
 
 document.addEventListener("mousemove", (e) => {
-  moveDrag(e.pageX, e.pageY);
+  moveDrag(e.pageX, e.clientY);
 });
 
 document.addEventListener("touchmove", (e) => {
   if (!dragging) return;
   const touch = e.touches[0];
-  moveDrag(touch.pageX, touch.pageY);
-});
+  moveDrag(touch.pageX, touch.clientY);
+}, { passive: true });
 
 document.addEventListener("mouseup", (e) => {
   endDrag(e.clientX, e.clientY);
@@ -347,6 +405,7 @@ function resetAll() {
   popupPokemonImage.alt = "";
 
   pokeball.classList.remove("ready", "dragging");
+  stopAutoScroll();
   resetPokeballPosition();
 }
 
