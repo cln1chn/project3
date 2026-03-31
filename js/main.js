@@ -13,6 +13,7 @@ const pokemonList = [
   "aron",
   "azelf",
   "beedrill",
+  "box combo",
   "breloom",
   "bulbasaur",
   "charizard",
