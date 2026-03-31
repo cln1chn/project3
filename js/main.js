@@ -49,6 +49,7 @@ const pokemonList = [
   "milotic",
   "morpeko",
   "mudkip",
+  "natu",
   "ninetales",
   "noivern",
   "oshawott",
@@ -91,6 +92,9 @@ let miniNoticeTimer = null;
 let interactionsFrozen = false;
 let finalChoiceMade = false;
 
+/* keeps track of what showed up last round */
+let lastRoundPokemon = [];
+
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 let lastPointerClientY = 0;
@@ -106,8 +110,27 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+/* proper shuffle */
+function fisherYatesShuffle(array) {
+  const arr = [...array];
+
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  return arr;
+}
+
+/* makes repeats from the very last round less likely */
 function shufflePokemon() {
-  shuffled = [...pokemonList].sort(() => Math.random() - 0.5);
+  const freshPool = pokemonList.filter(name => !lastRoundPokemon.includes(name));
+  const repeatPool = pokemonList.filter(name => lastRoundPokemon.includes(name));
+
+  const shuffledFresh = fisherYatesShuffle(freshPool);
+  const shuffledRepeats = fisherYatesShuffle(repeatPool);
+
+  shuffled = [...shuffledFresh, ...shuffledRepeats];
   pokemonIndex = 0;
 }
 
@@ -436,6 +459,11 @@ closeBtn.onclick = () => {
 };
 
 function resetAll() {
+  /* save what actually appeared this round before clearing */
+  lastRoundPokemon = blocks
+    .map(block => block.dataset.name)
+    .filter(name => name);
+
   shufflePokemon();
   picksLeft = 6;
   dragging = false;
