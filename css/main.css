@@ -24,7 +24,7 @@ body {
     180deg,
     #3b82f6 0%,   /* blue */
     #60a5fa 40%,  /* lighter blue */
-    #fde047 100%  /* yellow */
+    #ead980 100%  /* yellow */
   );
   color: var(--text);
   font-family: "Courier New", monospace;
