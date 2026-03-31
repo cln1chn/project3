@@ -22,27 +22,26 @@ body {
   margin: 0;
   background: linear-gradient(
     180deg,
-    #3b82f6 0%,   /* blue */
-    #60a5fa 40%,  /* lighter blue */
-    #ead980 100%  /* yellow */
+    #3b82f6 0%,
+    #60a5fa 40%,
+    #ead980 100%
   );
   color: var(--text);
   font-family: "Courier New", monospace;
   padding: 18px;
+  position: relative;
+  z-index: 0;
 }
 
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-
-  /*bg dots */
   background-image: radial-gradient(rgba(37, 99, 235, 0.35) 2.5px, transparent 2.5px);
   background-size: 32px 32px;
-
   opacity: 0.7;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
 .experience {
@@ -51,6 +50,8 @@ body::before {
   background: var(--panel);
   border: 3px solid var(--line);
   padding: 16px;
+  position: relative;
+  z-index: 1;
 }
 
 .topbar {
@@ -98,6 +99,10 @@ h1 {
   color: #114083;
 }
 
+.count-number {
+  font-weight: 700;
+}
+
 .pokeball-area {
   width: 90px;
   min-width: 90px;
@@ -127,6 +132,7 @@ h1 {
   cursor: grabbing;
   transform: scale(1.06);
   animation: pokeballShake 0.18s linear infinite;
+  pointer-events: none;
 }
 
 @keyframes pokeballShake {
@@ -152,7 +158,12 @@ h1 {
 
 .block {
   aspect-ratio: 1 / 1;
-  background: var(--block);
+  background: linear-gradient(
+    180deg,
+    #cfe8ff 0%,
+    #93c5fd 50%,
+    #60a5fa 100%
+  );
   border: 3px solid var(--line);
   position: relative;
   overflow: hidden;
@@ -163,38 +174,20 @@ h1 {
     box-shadow 0.2s ease;
   will-change: transform;
   cursor: pointer;
-  background: linear-gradient(
-    180deg,
-    #cfe8ff 0%,
-    #93c5fd 50%,
-    #60a5fa 100%
-  );
-
-  border: 3px solid var(--line);
-  position: relative;
-  overflow: hidden;
 }
 
 .block::before {
   content: "?";
   position: absolute;
   inset: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-family: Arial, sans-serif;
   font-weight: 700;
-
-  /* responsive size */
   font-size: clamp(3rem, 6vw, 4.5rem);
-
   color: rgba(255, 255, 255, 0.35);
-
-  text-shadow:
-    0 0 6px rgba(37, 99, 235, 0.25);
-
+  text-shadow: 0 0 6px rgba(37, 99, 235, 0.25);
   pointer-events: none;
   transition: opacity 0.2s ease;
 }
@@ -205,7 +198,6 @@ h1 {
 
 .block.locked {
   border-color: #1d4ed8;
-  
 }
 
 .block.locked::before {
@@ -247,7 +239,6 @@ h1 {
   100% { transform: scale(1); }
 }
 
-/* main popup msg */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -255,6 +246,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 5000;
 }
 
 .popup-overlay.hidden {
@@ -304,11 +296,9 @@ h1 {
   margin: 0;
   font-size: 1.4rem;
   text-align: center;
-
   font-family: 'Fredoka', sans-serif;
   font-weight: 600;
   letter-spacing: 0.5px;
-
   color: #114083;
 }
 
@@ -323,7 +313,6 @@ h1 {
   font-family: "Courier New", monospace;
 }
 
-/* small temp notice */
 .mini-notice {
   position: fixed;
   left: 50%;
