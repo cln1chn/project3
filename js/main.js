@@ -68,9 +68,9 @@ function shufflePokemon() {
 
 function updateCounter() {
   if (picksLeft === 1) {
-    counter.textContent = "1 cell left to pick";
+    counter.textContent = "1 card left";
   } else {
-    counter.textContent = `${picksLeft} cells left to pick`;
+    counter.textContent = `${picksLeft} cards left`;
   }
 }
 
@@ -201,7 +201,7 @@ function selectBlock(block) {
   if (picksLeft === 0) {
     interactionsFrozen = true;
     pokeball.classList.add("ready");
-    showMiniNotice("✔ selections complete");
+    showMiniNotice("✔ selection complete!");
 
     blocks.forEach((b) => {
       b.dataset.hoverX = "0";
@@ -215,7 +215,7 @@ function selectBlock(block) {
 
 function startDrag() {
   if (picksLeft > 0) {
-    showMiniNotice("pick all 6 first");
+    showMiniNotice("pick all 6 first!");
     return;
   }
 
