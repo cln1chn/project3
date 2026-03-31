@@ -1,15 +1,17 @@
 :root {
-  --bg: #0d1b11;
-  --panel: #15291a;
-  --panel-2: #1c3523;
-  --block: #23452c;
-  --block-2: #2d5938;
-  --text: #d7f4db;
-  --muted: #9dc8a4;
-  --line: #315f3c;
-  --accent: #79c688;
-  --chosen: #b89a2e;
-  --chosen-border: #e0bf47;
+  --bg: #f5f9ff;
+  --panel: #dbeafe;
+  --panel-2: #bfdbfe;
+  --block: #93c5fd;
+  --block-2: #60a5fa;
+  --text: #173b72;
+  --muted: #3b6aa8;
+  --line: #2563eb;
+  --accent: #facc15;
+  --chosen: #fde68a;
+  --chosen-border: #fbbf24;
+  --popup-glow-1: rgba(250, 204, 21, 0.38);
+  --popup-glow-2: rgba(59, 130, 246, 0.25);
 }
 
 * {
@@ -18,7 +20,7 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: linear-gradient(180deg, #eff6ff, #dbeafe);
   color: var(--text);
   font-family: "Courier New", monospace;
   padding: 18px;
@@ -43,6 +45,7 @@ h1 {
   margin: 0;
   font-size: 3rem;
   text-transform: lowercase;
+  color: #114083;
 }
 
 .eyebrow {
@@ -73,6 +76,7 @@ h1 {
 
 .pick-counter {
   margin: 0;
+  color: #114083;
 }
 
 .pokeball-area {
@@ -84,7 +88,7 @@ h1 {
 }
 
 .pokeball {
-  width: 70px;
+  width: 76px;
   cursor: grab;
   user-select: none;
   touch-action: none;
@@ -92,7 +96,7 @@ h1 {
 }
 
 .pokeball.ready {
-  filter: drop-shadow(0 0 8px rgba(224, 191, 71, 0.45));
+  filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.55));
 }
 
 .pokeball.dragging {
@@ -112,6 +116,7 @@ h1 {
 .grid-wrap {
   border: 3px solid var(--line);
   min-height: 70vh;
+  background: #eff6ff;
 }
 
 .grid {
@@ -126,7 +131,6 @@ h1 {
   background: var(--block);
   border: 3px solid var(--line);
   position: relative;
-  cursor: pointer;
   overflow: hidden;
   transition:
     transform 0.36s ease,
@@ -134,6 +138,7 @@ h1 {
     border-color 0.2s ease,
     box-shadow 0.2s ease;
   will-change: transform;
+  cursor: pointer;
 }
 
 .block:hover {
@@ -141,13 +146,15 @@ h1 {
 }
 
 .block.locked {
-  border-color: var(--accent);
+  border-color: #1d4ed8;
 }
 
 .block.chosen {
   background: var(--chosen);
   border-color: var(--chosen-border);
-  box-shadow: 0 0 16px rgba(224, 191, 71, 0.35);
+  box-shadow:
+    0 0 16px rgba(251, 191, 36, 0.45),
+    0 0 32px rgba(250, 204, 21, 0.22);
 }
 
 .block-image {
@@ -177,20 +184,11 @@ h1 {
   100% { transform: scale(1); }
 }
 
-.popup-pokemon-image {
-  display: block;
-  width: 180px;
-  max-width: 100%;
-  height: 180px;
-  object-fit: contain;
-  margin: 0 auto 14px;
-}
-
 /* main popup */
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(13, 37, 77, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,33 +199,58 @@ h1 {
 }
 
 .popup-box {
-  background: var(--panel);
-  border: 3px solid var(--line);
-  padding: 20px;
+  background: #eff6ff;
+  border: 3px solid var(--chosen-border);
+  padding: 24px 20px 20px;
   position: relative;
-  min-width: 280px;
-
-  /* base glow */
+  min-width: 320px;
   box-shadow:
-    0 0 12px rgba(224, 191, 71, 0.25),
-    0 0 28px rgba(224, 191, 71, 0.18);
-
+    0 0 12px var(--popup-glow-1),
+    0 0 28px var(--popup-glow-2);
   animation: popupGlow 2s ease-in-out infinite;
+}
+
+@keyframes popupGlow {
+  0% {
+    box-shadow:
+      0 0 10px rgba(250, 204, 21, 0.2),
+      0 0 22px rgba(59, 130, 246, 0.14);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(250, 204, 21, 0.42),
+      0 0 40px rgba(59, 130, 246, 0.26);
+  }
+  100% {
+    box-shadow:
+      0 0 10px rgba(250, 204, 21, 0.2),
+      0 0 22px rgba(59, 130, 246, 0.14);
+  }
+}
+
+.popup-pokemon-image {
+  display: block;
+  width: 280px;
+  max-width: 100%;
+  height: 280px;
+  object-fit: contain;
+  margin: 0 auto 14px;
 }
 
 .popup-message {
   margin: 0;
-  font-size: 1.2rem;
-  padding-right: 24px;
+  font-size: 1.25rem;
+  text-align: center;
+  color: #114083;
 }
 
 .popup-close {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 6px;
+  right: 6px;
   cursor: pointer;
   border: 2px solid var(--line);
-  background: var(--panel-2);
+  background: #dbeafe;
   color: var(--text);
   font-family: "Courier New", monospace;
 }
@@ -238,13 +261,14 @@ h1 {
   left: 50%;
   top: 32px;
   transform: translateX(-50%);
-  background: var(--panel);
+  background: #eff6ff;
   border: 3px solid var(--line);
   color: var(--text);
   padding: 10px 14px;
   z-index: 2000;
   opacity: 0;
   pointer-events: none;
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.15);
 }
 
 .mini-notice.show {
@@ -292,5 +316,19 @@ h1 {
 
   .grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pokeball {
+    width: 60px;
+  }
+
+  .popup-pokemon-image {
+    width: 220px;
+    height: 220px;
+  }
+
+  .popup-box {
+    min-width: 0;
+    width: min(92vw, 360px);
   }
 }

@@ -9,22 +9,38 @@ const miniNotice = document.getElementById("miniNotice");
 
 const pokemonList = [
   "articuno",
+  "aron",
+  "azelf",
   "beedrill",
+  "charizard",
+  "cherubi",
+  "darumaka",
   "ditto",
+  "doduo",
   "dragonite",
   "drifloon",
   "duosion",
+  "glameow",
   "houndoom",
   "jigglypuff",
+  "jynx",
   "krabby",
   "leafeon",
+  "mantyke",
+  "meowth",
   "mew",
   "morpeko",
+  "oshawott",
+  "pikachu",
+  "poliwhirl",
   "sentret",
   "shellder",
   "spheal",
+  "squirtle",
+  "staraptor",
   "tepig",
   "wartortle",
+  "whiscash",
   "woobat"
 ];
 
@@ -174,6 +190,7 @@ function selectBlock(block) {
 
   img.src = `img/pokemon/${name}.png`;
   block.dataset.name = name;
+  img.alt = name;
 
   block.classList.add("revealed");
 
@@ -196,7 +213,7 @@ function selectBlock(block) {
   }
 }
 
-pokeball.addEventListener("mousedown", () => {
+function startDrag() {
   if (picksLeft > 0) {
     showMiniNotice("pick all 6 first");
     return;
@@ -204,18 +221,18 @@ pokeball.addEventListener("mousedown", () => {
 
   dragging = true;
   pokeball.classList.add("dragging");
-});
+}
 
-document.addEventListener("mousemove", (e) => {
+function moveDrag(x, y) {
   if (!dragging) return;
 
   pokeball.style.position = "absolute";
-  pokeball.style.left = e.pageX - 35 + "px";
-  pokeball.style.top = e.pageY - 35 + "px";
+  pokeball.style.left = `${x - 35}px`;
+  pokeball.style.top = `${y - 35}px`;
   pokeball.style.zIndex = "999";
-});
+}
 
-document.addEventListener("mouseup", (e) => {
+function endDrag(x, y) {
   if (!dragging) return;
 
   dragging = false;
@@ -227,10 +244,10 @@ document.addEventListener("mouseup", (e) => {
     const rect = block.getBoundingClientRect();
 
     if (
-      e.clientX > rect.left &&
-      e.clientX < rect.right &&
-      e.clientY > rect.top &&
-      e.clientY < rect.bottom &&
+      x > rect.left &&
+      x < rect.right &&
+      y > rect.top &&
+      y < rect.bottom &&
       block.classList.contains("locked")
     ) {
       chosenBlock = block;
@@ -242,6 +259,35 @@ document.addEventListener("mouseup", (e) => {
   } else {
     resetPokeballPosition();
   }
+}
+
+pokeball.addEventListener("mousedown", (e) => {
+  startDrag();
+});
+
+pokeball.addEventListener("touchstart", (e) => {
+  const touch = e.touches[0];
+  startDrag(touch.pageX, touch.pageY);
+});
+
+document.addEventListener("mousemove", (e) => {
+  moveDrag(e.pageX, e.pageY);
+});
+
+document.addEventListener("touchmove", (e) => {
+  if (!dragging) return;
+  const touch = e.touches[0];
+  moveDrag(touch.pageX, touch.pageY);
+});
+
+document.addEventListener("mouseup", (e) => {
+  endDrag(e.clientX, e.clientY);
+});
+
+document.addEventListener("touchend", (e) => {
+  if (!dragging) return;
+  const touch = e.changedTouches[0];
+  endDrag(touch.clientX, touch.clientY);
 });
 
 function choosePokemon(block) {
@@ -287,6 +333,7 @@ function resetAll() {
 
     const img = block.querySelector("img");
     img.src = "";
+    img.alt = "";
 
     block.dataset.name = "";
     block.dataset.baseX = "0";
