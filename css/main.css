@@ -77,7 +77,7 @@ h1 {
 .eyebrow {
   font-family: "Fredoka", sans-serif;
   font-size: 0.95rem;
-  color: var(--muted);
+  color: #dcbd0e;
   margin: 0 0 4px;
 }
 
@@ -421,7 +421,7 @@ h1 {
   .grid-wrap {
     flex: 1;
     min-height: 0;
-    margin-top: 17px;
+    margin-top: 22px;
   }
 
   .grid {
