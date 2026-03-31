@@ -98,6 +98,11 @@ h1 {
   user-select: none;
   touch-action: none;
   transition: transform 0.15s ease, filter 0.2s ease, opacity 0.2s ease;
+  border-radius: 50%;
+  outline: 2px solid white;
+  box-shadow:
+    0 0 6px rgba(255, 255, 255, 0.6),
+    0 0 12px rgba(255, 255, 255, 0.3);
 }
 
 .pokeball.ready {
@@ -189,7 +194,7 @@ h1 {
   100% { transform: scale(1); }
 }
 
-/* main popup */
+/* main popup msg */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -265,7 +270,7 @@ h1 {
   font-family: "Courier New", monospace;
 }
 
-/* small temporary notice */
+/* small temp notice */
 .mini-notice {
   position: fixed;
   left: 50%;
