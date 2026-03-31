@@ -61,15 +61,16 @@ body::before {
 }
 
 h1 {
-  font-family: Arial, sans-serif;
+  font-family: 'Fredoka', sans-serif;
   margin: 0;
   font-size: 3rem;
   text-transform: lowercase;
-  color: #114083;
+  color: #4b80cb;
 }
 
 .eyebrow {
-  font-size: 0.8rem;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
   color: var(--muted);
   margin: 0 0 6px;
 }
@@ -299,7 +300,7 @@ h1 {
   font-family: 'Fredoka', sans-serif;
   font-weight: 600;
   letter-spacing: 0.5px;
-  color: #114083;
+  color: #4b80cb;
 }
 
 .popup-close {
