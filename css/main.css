@@ -31,6 +31,20 @@ body {
   padding: 18px;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  /*bg dots */
+  background-image: radial-gradient(rgba(37, 99, 235, 0.35) 2.5px, transparent 2.5px);
+  background-size: 32px 32px;
+
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .experience {
   max-width: 1100px;
   margin: auto;
@@ -149,6 +163,40 @@ h1 {
     box-shadow 0.2s ease;
   will-change: transform;
   cursor: pointer;
+  background: linear-gradient(
+    180deg,
+    #cfe8ff 0%,
+    #93c5fd 50%,
+    #60a5fa 100%
+  );
+
+  border: 3px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.block::before {
+  content: "?";
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+
+  /* responsive size */
+  font-size: clamp(3rem, 6vw, 4.5rem);
+
+  color: rgba(255, 255, 255, 0.35);
+
+  text-shadow:
+    0 0 6px rgba(37, 99, 235, 0.25);
+
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
 
 .block:hover {
@@ -157,6 +205,11 @@ h1 {
 
 .block.locked {
   border-color: #1d4ed8;
+  
+}
+
+.block.locked::before {
+  opacity: 0;
 }
 
 .block.chosen {
